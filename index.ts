@@ -27,8 +27,9 @@ async function fetchPage(url: string, cache: boolean = false) {
 function formatData(data: any[]) {
   return data
     .map((item) => {
+      const alert = item.alert.length > 0 ? `alert: ${item.alert}` : "";
       return `
-<${item.url}|${item.location}> ${item.date} alert: ${item.alert}
+${item.date} <${item.url}|${item.location}> ${alert}
     `.trim();
     })
     .join("\n\n");
