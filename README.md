@@ -1,6 +1,6 @@
 # NJ MVC
 
-This script tells you the fastest appointment dates to renew driver's license at each MVC (Licensing Center).
+This script tells you the fastest appointment dates available to renew your driver's license at each MVC (Licensing Center).
 
 ## To run
 
