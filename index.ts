@@ -24,6 +24,25 @@ async function fetchPage(url: string, cache: boolean = false) {
   return data;
 }
 
+function formatData(data: any[]) {
+  return data
+    .map((item) => {
+      return `
+<${item.url}|${item.location}> ${item.date} alert: ${item.alert}
+    `.trim();
+    })
+    .join("\n\n");
+}
+
+async function notify(data: any[], slackHookUrl: string) {
+  const markdown = formatData(data);
+  const res = await fetch(slackHookUrl, {
+    method: "post",
+    body: JSON.stringify({ text: markdown }),
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 async function scrape(id) {
   const url = `https://telegov.njportal.com/njmvc/AppointmentWizard/11/${id}`;
   const page = await fetchPage(url, process.env.NODE_ENV !== "production");
@@ -67,9 +86,11 @@ if (require.main === module) {
   ];
 
   (async () => {
+    const result = [];
     for (const id of ids) {
       const res = await scrape(id);
-      console.log(res);
+      result.push(res);
     }
+    await notify(result, process.env.SLACK_HOOK_URL);
   })();
 }
