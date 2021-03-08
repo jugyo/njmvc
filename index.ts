@@ -35,8 +35,6 @@ ${item.date} <${item.url}|${item.location}> ${alert}
     .join("\n\n");
 }
 
-const lastNotificationFilePath = "/tmp/njmvc-last-notification";
-
 async function notify(data: any[], slackHookUrl: string) {
   const filtered = data.filter(
     (i) => i.alert.length === 0 && i.date.match(/April|March/)
@@ -45,27 +43,14 @@ async function notify(data: any[], slackHookUrl: string) {
     console.log("Skip to notify");
     return;
   }
+
   const markdown = formatData(filtered);
-
-  let lastNotification: string;
-  try {
-    lastNotification = fs
-      .readFileSync(lastNotificationFilePath)
-      .toString("utf-8");
-  } catch (error) {}
-
-  if (markdown === lastNotification) {
-    console.log("Skip to notify. Same notification as last one");
-    return;
-  }
 
   await fetch(slackHookUrl, {
     method: "post",
     body: JSON.stringify({ text: markdown }),
     headers: { "Content-Type": "application/json" },
   });
-
-  fs.writeFileSync(lastNotificationFilePath, markdown);
 }
 
 async function scrape(id) {
