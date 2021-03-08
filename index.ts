@@ -116,6 +116,7 @@ if (require.main === module) {
       const res = await scrape(id);
       result.push(res);
     }
+    console.log(JSON.stringify(result, null, 2));
     await notify(result, process.env.SLACK_HOOK_URL);
   })();
 }
