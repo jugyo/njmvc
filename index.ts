@@ -96,11 +96,7 @@ if (require.main === module) {
   ];
 
   (async () => {
-    const result = [];
-    for (const id of ids) {
-      const res = await scrape(id);
-      result.push(res);
-    }
+    const result = await Promise.all(ids.map((id) => scrape(id)));
     console.log(JSON.stringify(result, null, 2));
     await notify(result, process.env.SLACK_HOOK_URL);
   })();
