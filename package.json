@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node index.ts",
-    "start": "NODE_ENV=production ts-node index.ts"
+    "start": "NODE_ENV=production ts-node index.ts",
+    "start2": "NODE_ENV=production ts-node index2.ts"
   },
   "keywords": [],
   "author": "",

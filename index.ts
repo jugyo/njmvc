@@ -37,7 +37,8 @@ ${item.date} <${item.url}|${item.location}> ${alert}
 
 async function notify(data: any[], slackHookUrl: string) {
   const filtered = data.filter(
-    (i) => i.alert.length === 0 && i.date.match(/April|March/)
+    // (i) => i.alert.length === 0 && i.date.match(/April|March/)
+    (i) => true
   );
   if (filtered.length === 0) {
     console.log("Skip to notify");
@@ -97,7 +98,13 @@ if (require.main === module) {
 
   (async () => {
     const result = await Promise.all(ids.map((id) => scrape(id)));
-    console.log(JSON.stringify(result, null, 2));
-    await notify(result, process.env.SLACK_HOOK_URL);
+    // console.log(JSON.stringify(result, null, 2));
+
+    const r = []
+    for (const i of result) {
+      r.push({id: i.id, location: i.location})
+    }
+    console.log(JSON.stringify(r, null, 2));
+    // await notify(result, process.env.SLACK_HOOK_URL);
   })();
 }
