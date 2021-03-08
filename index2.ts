@@ -13,7 +13,7 @@ function formatData(data: any[]) {
   return data
     .map((item) => {
       return `
-${item.date} <${item.url}|${item.location}>
+${item.date.toDateString()} <${item.url}|${item.location}>
     `.trim();
     })
     .join("\n\n");
