@@ -5,7 +5,7 @@ async function get(id: number) {
     `https://telegov.njportal.com/njmvc/CustomerCreateAppointments/GetNextAvailableDate?appointmentTypeId=11&locationId=${id}`
   );
   const data = JSON.parse(await res.text());
-  const date = new Date(data.next);
+  const date = new Date(data.next.match(/Next Available: (.*)/)[1]);
   return { date, data };
 }
 
