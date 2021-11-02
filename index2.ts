@@ -1,10 +1,11 @@
 import fetch from "node-fetch";
 
-async function get(id: number) {
+async function get(id: number, appointmentTypeId: string) {
   const res = await fetch(
-    `https://telegov.njportal.com/njmvc/CustomerCreateAppointments/GetNextAvailableDate?appointmentTypeId=11&locationId=${id}`
+    `https://telegov.njportal.com/njmvc/CustomerCreateAppointments/GetNextAvailableDate?appointmentTypeId=${appointmentTypeId}&locationId=${id}`
   );
   const data = JSON.parse(await res.text());
+  console.log(data);
   const date = new Date(data.next.match(/Next Available: (.*)/)[1]);
   return { date, data };
 }
@@ -140,9 +141,11 @@ if (require.main === module) {
   ];
 
   (async () => {
+    const appointmentTypeId = process.env.APPOINTMENT_TYPE_ID || "11";
+
     const result = await Promise.all(
       locations.map(async (l) => {
-        const res = await get(l.id);
+        const res = await get(l.id, appointmentTypeId);
         return {
           ...l,
           ...res,
@@ -153,6 +156,8 @@ if (require.main === module) {
 
     console.log(JSON.stringify(result, null, 2));
 
-    await notify(result, process.env.SLACK_HOOK_URL);
+    if (process.env.SLACK_HOOK_URL) {
+      await notify(result, process.env.SLACK_HOOK_URL);
+    }
   })();
 }
