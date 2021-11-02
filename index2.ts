@@ -5,8 +5,8 @@ async function get(id: number, appointmentTypeId: string) {
     `https://telegov.njportal.com/njmvc/CustomerCreateAppointments/GetNextAvailableDate?appointmentTypeId=${appointmentTypeId}&locationId=${id}`
   );
   const data = JSON.parse(await res.text());
-  console.log(data);
-  const date = new Date(data.next.match(/Next Available: (.*)/)[1]);
+  const match = data.next.match(/Next Available: (.*)/);
+  const date = match ? match[1] : null;
   return { date, data };
 }
 
@@ -27,6 +27,7 @@ interface Result {
 async function notify(results: Result[], slackHookUrl: string) {
   const now = new Date();
   const filtered = results
+    .filter((i) => i.date)
     .filter((i) => !isNaN(i.date.getTime()))
     .filter((i) => i.date.getTime() - now.getTime() < 24 * 3600 * 1000 * 14);
 
@@ -36,6 +37,10 @@ async function notify(results: Result[], slackHookUrl: string) {
   }
 
   const markdown = formatData(filtered);
+
+  if (!slackHookUrl) {
+    return;
+  }
 
   await fetch(slackHookUrl, {
     method: "post",
@@ -156,8 +161,6 @@ if (require.main === module) {
 
     console.log(JSON.stringify(result, null, 2));
 
-    if (process.env.SLACK_HOOK_URL) {
-      await notify(result, process.env.SLACK_HOOK_URL);
-    }
+    await notify(result, process.env.SLACK_HOOK_URL);
   })();
 }
